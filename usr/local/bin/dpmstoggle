@@ -1,0 +1,12 @@
+#!/bin/bash
+res=$(xset q | grep "DPMS is " | sed "s/ DPMS is //")
+if [ $res = "Disabled" ]; then
+	xset +dpms
+	xset s blank
+	xset s on
+else
+	xset -dpms
+	xset s noblank
+	xset s off
+fi
+

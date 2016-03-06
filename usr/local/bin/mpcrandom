@@ -1,0 +1,4 @@
+mpc clear
+mpc ls | mpc add
+mpc random on
+mpc play

@@ -1,0 +1,39 @@
+#!/bin/bash
+echo -n "Insert stream size (Mb): "
+read SIZE_H
+echo -n "Insert stream duration (min): "
+read DURATION_H
+echo -n "Insert average download rate (Kb/s): "
+read DOWNRATE
+
+SIZE=`echo "scale=5; $SIZE_H*1024" | bc -l`
+DURATION=`echo "scale=5; $DURATION_H*60" | bc -l`
+BITRATE=`echo "scale=5; $SIZE/$DURATION" | bc -l`
+
+WAITTIME=`echo "scale=5; ($BITRATE-$DOWNRATE)*$DURATION/$BITRATE" | bc -l`
+WAITTIME_M=`echo "scale=2; $WAITTIME/60" | bc -l`
+
+BUFFERNEEDED=`echo "scale=5; $WAITTIME*$DOWNRATE" | bc -l`
+BUFFERNEEDED_MB=`echo "scale=2; $BUFFERNEEDED/1024" | bc -l`
+echo
+
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+printf "+++%20s%35s%22s\n" "Stream size = " "$SIZE_H MB ($SIZE KB)" "+++"
+printf "+++%20s%35s%22s\n" "Duration = " "$DURATION_H min ($DURATION s)" "+++"
+printf "+++%20s%35s%22s\n" "AVG downrate = " "$DOWNRATE KBps" "+++"
+printf "+++%20s%35s%22s\n" "AVG Bitrate = " "$BITRATE KBps" "+++"
+printf "+++%20s%35s%22s\n" "Wait time = " "$WAITTIME_M min ($WAITTIME s)" "+++"
+printf "+++%20s%35s%22s\n" "Buffer needed = " "$BUFFERNEEDED_MB MB ($BUFFERNEEDED KB)" "+++" 
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo
+
+txtrst='\e[0m' # Reset
+txtred='\e[01;31m' # Rosso
+txtredblink='\e[5;30;41m' # Rosso Blink
+txtblue='\e[01;34m' #blue
+echo -e $txtred"You have to wait for $WAITTIME_M minutes ($WAITTIME seconds), so you will have "
+echo -e "downloaded $BUFFERNEEDED_MB MB ($BUFFERNEEDED KB) and you will be able to play your "
+echo -e "stream without buffering issues $txtrst"
+[[ `echo "$WAITTIME > 0" | bc` -eq "1" ]] || echo -e "\n"$txtredblink"ASD You have to start the stream before you start downloading to have a stop.$txtrst\n\n"
+
+echo -e "$txtblue+++++++++++++++++++++++++++++++   Enjoy it! :D   +++++++++++++++++++++++++++++++$txtrst"

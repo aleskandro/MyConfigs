@@ -1,0 +1,59 @@
+#!/usr/bin/python 
+
+import argparse
+import math
+
+from pythonosc import dispatcher
+from pythonosc import osc_server
+from os import system
+
+def startradio(unused_addr, args):
+  system("/usr/local/bin/mpcrandom")
+  print("Starting Radio...")
+
+def volume(unused_addr,args,mode):
+  system("amixer -c 0 set Master "+mode)
+  print("Volume "+mode)
+
+def mplayer(unused_addr, args, command):
+  system("smplayer -send-action " + command)
+  print(command + " command sent to smplayer")
+
+def mpc(unused_addr, args, command):
+  system("mpc " + command)
+  print(command + " command sent to mpd")
+
+def screen(unused_addr, args, command):
+  system("xset dpms force " + command)
+  print("Turning off display")
+
+def dpmstoggle(unused_addr, args):
+  system("/usr/local/bin/dpmstoggle")
+  print("Dpms toggle")
+
+def suspend(unused_addr, args, time):
+  system("sleep " + time + " && sudo pm-suspend")
+  print("Standby")
+
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--ip",
+      default="0.0.0.0", help="The ip to listen on")
+  parser.add_argument("--port",
+      type=int, default=8000, help="The port to listen on")
+  args = parser.parse_args()
+
+  dispatcher = dispatcher.Dispatcher()
+  dispatcher.map("/debug", print)
+  dispatcher.map("/mpd/radio", startradio, "Start radio")
+  dispatcher.map("/volume", volume, "Edit volume")
+  dispatcher.map("/mplayer", mplayer, "Control mplayer")
+  dispatcher.map("/mpd", mpc, "Control mpd")
+  dispatcher.map("/screen", screen, "Power on/off display")
+  dispatcher.map("/dpms", dpmstoggle, "Toggle dpms")
+  dispatcher.map("/standby", suspend, "Standby")
+
+  server = osc_server.ThreadingOSCUDPServer(
+      (args.ip, args.port), dispatcher)
+  print("Serving on {}".format(server.server_address))
+  server.serve_forever()

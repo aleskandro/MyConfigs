@@ -1,0 +1,1 @@
+env DISPLAY=:0 XAUTHORITY=/home/aleskandro/.Xauthority xterm -fa 'DJB Get Digital' -fs 48  -geometry 30x5+0+0 -fn 6x5 -bg black -fg green -e alarm.sh

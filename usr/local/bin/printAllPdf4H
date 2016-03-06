@@ -1,0 +1,5 @@
+for file in *.pdf
+do
+	echo "Printing $file..."
+	lp -d HL-2030_HL-2030_series -o orientation-rquested=4 -o number-up=4 -o number-up-layout=btlr -o fit-to-page -o media=a4  $file
+done
