@@ -191,8 +191,8 @@ bindsym $mod+F12 exec xset dpms force off
 bindsym $mod+Shift+F12 exec "sudo pm-suspend"
 bindsym $mod+Shift+Prior exec amixer -c 0 set Master 2dB+
 bindsym $mod+Shift+Next exec  amixer -c 0 set Master 2dB-
-
+bindsym Print	exec ksnapshot
 # browser pop-ups
  for_window [title="(Copy.*|Moving.*|Progress.*)" class="Dolphin"] floating enable
-
+for_window [window_role="pop-up"] floating enable
 exec eval "$(/usr/bin/ssh-agent -a ~/.ssh/agent.sock)"
