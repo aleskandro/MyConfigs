@@ -1,6 +1,6 @@
 # I Don't Know What I'm Doing {{{
-zstyle ':zoppo:update' auto 'yes'
-zstyle ':zoppo:update' force 'yes'
+zstyle ':zoppo:update' auto 'no'
+zstyle ':zoppo:update' force 'no'
 # }}}
 
 # I Know What I'm Doing {{{
