@@ -1,0 +1,335 @@
+# Configuration
+# -------------
+# :zoppo:prompt:powerline
+#   new-codepoints - bool - use new font codepoints
+#
+# :zoppo:prompt:powerline:blank
+#   above - bool - leaves an empty line above the prompt
+#   below - bool - makes you type the command below the powerline
+#
+# :zoppo:prompt:powerline:plugins
+#   left  - array - the plugins to have on the left
+#   right - array -the plugins to have on the right
+
+function prompt_powerline_setup {
+  plugins:require terminal || return 1
+
+  functions:autoload vcs_info
+  hooks:add precmd prompt_powerline_precmd
+
+  prompt_opts=(cr percent subst)
+
+  if zstyle -t ':zoppo:prompt:powerline' new-codepoints; then
+    POWERLINE_RIGHT_ARROW=$'\uE0B1'
+    POWERLINE_LEFT_ARROW=$'\uE0B3'
+
+    POWERLINE_RIGHT_FILLED_ARROW=$'\uE0B0'
+    POWERLINE_LEFT_FILLED_ARROW=$'\uE0B2'
+
+    POWERLINE_BRANCH=$'\uE0A0'
+  else
+    POWERLINE_RIGHT_ARROW=$'\u2B81'
+    POWERLINE_LEFT_ARROW=$'\u2B83'
+
+    POWERLINE_RIGHT_FILLED_ARROW=$'\u2B80'
+    POWERLINE_LEFT_FILLED_ARROW=$'\u2B82'
+
+    POWERLINE_BRANCH=$'\u2B60'
+  fi
+
+  local -a left
+  zdefault -a ':zoppo:prompt:powerline:plugins' left left \
+    'userhost' 'path'
+
+  local -a right
+  zdefault -a ':zoppo:prompt:powerline:plugins' right right \
+    'return' 'date'
+
+  local plugin
+  for plugin ($left $right); do
+    if ! is-function "+powerline:$plugin"; then
+      warn "powerline: $plugin: plugin not found"
+      continue
+    fi
+
+    if is-function "+powerline:${plugin}:setup"; then
+      "+powerline:${plugin}:setup"
+    fi
+  done
+}
+
+function prompt_powerline_precmd {
+  PROMPT="$(prompt:powerline:render-prompt left)"
+
+  if zdefault -t ':zoppo:prompt:powerline:blank' above 'yes'; then
+    PROMPT=$'\n'"$PROMPT"
+  fi
+
+  if zdefault -t ':zoppo:prompt:powerline:blank' below 'no'; then
+    PROMPT="$PROMPT"$'\n'
+  else
+    PROMPT="$PROMPT "
+  fi
+
+  RPROMPT=" $(prompt:powerline:render-prompt right)"
+}
+
+function prompt:powerline:side-is {
+  zstyle -t ':zoppo:prompt:powerline:internal' side "$1"
+}
+
+function prompt:powerline:item-is {
+  case "$1" in
+    first) zstyle -T ':zoppo:prompt:powerline:internal:item' previous ;;
+    last)  zstyle -T ':zoppo:prompt:powerline:internal:item' next ;;
+    *)     false
+  esac
+}
+
+function prompt:powerline:colors-for {
+  local name="$1"
+
+  if (( $+3 )); then
+    while (( $+2 )); do
+      zdefault ":zoppo:prompt:powerline:plugin:${name}:colors" "$2" "$3"
+      shift 2
+    done
+  else
+    typeset -g "$2[fg]=default"
+    typeset -g "$2[bg]=default"
+
+    local element
+    for element (fg bg fx); do
+      if ! zstyle -T ":zoppo:prompt:powerline:plugin:${name}:colors" "$element"; then
+        zstyle -s ":zoppo:prompt:powerline:plugin:${name}:colors" "$element" "$2[$element]"
+      fi
+    done
+  fi
+}
+
+function prompt:powerline:render-prompt {
+  zstyle ':zoppo:prompt:powerline:internal' side "$1"
+  zstyle -d ':zoppo:prompt:powerline:internal:item' previous
+
+  local -a plugins
+  zstyle -a ':zoppo:prompt:powerline:plugins' "$1" plugins
+
+  integer i
+  for (( i=1; i <= $#plugins; ++i )); do
+    if (( $+plugins[$(( i + 1 ))]  )); then
+      zstyle ':zoppo:prompt:powerline:internal:item' next "$plugins[$(( i + 1 ))]"
+    else
+      zstyle -d ':zoppo:prompt:powerline:internal:item' next
+    fi
+
+    if prompt:powerline:render-item "$plugins[$i]"; then
+      zstyle ':zoppo:prompt:powerline:internal:item' previous "$plugins[$i]"
+    fi
+  done
+
+  if prompt:powerline:side-is left && ! zstyle -t ':zoppo:prompt:powerline:internal:item' previous "$plugins[-1]"; then
+    local previous && zstyle -s ':zoppo:prompt:powerline:internal:item' previous previous
+    local -A colors && prompt:powerline:colors-for "$previous" colors
+
+    print -n " %{$fg[$colors[bg]]%}%{$bg[default]%}$POWERLINE_RIGHT_FILLED_ARROW%{$fg[default]%}"
+  fi
+}
+
+function prompt:powerline:render-item {
+  if ! is-function "+powerline:$1"; then
+    return 127
+  fi
+
+  local output
+  output="$(+powerline:$1)"
+
+  if (( $? != 0 )) || [[ "$output" =~ '^\s*$' ]]; then
+    return 1
+  fi
+
+  local effect
+  local -A colors && prompt:powerline:colors-for "$1" colors
+
+  if prompt:powerline:side-is left; then
+    if ! prompt:powerline:item-is first; then
+      local previous && zstyle -s ':zoppo:prompt:powerline:internal:item' previous previous
+      local -A old && prompt:powerline:colors-for "$previous" old
+
+      print -n " %{$fg[$old[bg]]%}%{$bg[$colors[bg]]%}$POWERLINE_RIGHT_FILLED_ARROW "
+    fi
+  else
+    if prompt:powerline:item-is first; then
+      print -n "%{$fg[$colors[bg]]%}%{$bg[default]%}$POWERLINE_LEFT_FILLED_ARROW"
+    else
+      local previous && zstyle -s ':zoppo:prompt:powerline:internal:item' previous previous
+      local -A old && prompt:powerline:colors-for "$previous" old
+
+      print -n " %{$bg[$old[bg]]%}%{$fg[$colors[bg]]%}$POWERLINE_LEFT_FILLED_ARROW"
+    fi
+  fi
+
+  print -n "%{$fg[$colors[fg]]%}%{$bg[$colors[bg]]%}"
+
+  for effect ($colors[fx])
+    print -n "%{$fx[$effect]%}"
+
+  if prompt:powerline:side-is right || (prompt:powerline:side-is left && prompt:powerline:item-is first); then
+    print -n ' '
+  fi
+
+  print -n -- "$output"
+
+  for effect ($colors[fx])
+    print -n "%{$fx[no-$effect]%}"
+
+  if prompt:powerline:item-is last; then
+    if prompt:powerline:side-is left; then
+      print -n " %{$fg[$colors[bg]]%}%{$bg[default]%}$POWERLINE_RIGHT_FILLED_ARROW%{$fg[default]%}"
+    else
+      print -n "%{ %}%{$fg[default]%}%{$bg[default]%}"
+    fi
+  fi
+
+  return 0
+}
+
+function prompt:powerline:render-separator {
+  print -n ' '
+
+  if prompt:powerline:side-is left; then
+    print -n $POWERLINE_RIGHT_ARROW
+  else
+    print -n $POWERLINE_LEFT_ARROW
+  fi
+
+  print -n ' '
+}
+
+# Plugins {{{
+function +powerline:userhost {
+  local format
+  local result
+
+  if prompt:powerline:side-is left; then
+    zdefault -s ':zoppo:prompt:powerline:plugin:userhost' format format '%h%|%u'
+  else
+    zdefault -s ':zoppo:prompt:powerline:plugin:userhost' format format '%u%|%h'
+  fi
+
+  zformat -f result "$format" u:'%(!.%Sroot%s.%n)' U:'%(!.%SROOT%s.%n)' h:'%m' "|:$(prompt:powerline:render-separator)"
+  print -n "$result"
+}
+
+function +powerline:userhost:setup {
+  prompt:powerline:colors-for userhost \
+    fx bold \
+    fg 234 \
+    bg 154
+}
+
+function +powerline:date {
+  local format
+  local result
+
+  if prompt:powerline:side-is left; then
+    zdefault -s ':zoppo:prompt:powerline:plugin:date' format format '%D{%Y-%m-%d}%|%D{%H:%M:%S}'
+  else
+    zdefault -s ':zoppo:prompt:powerline:plugin:date' format format '%D{%H:%M:%S}%|%D{%Y-%m-%d}'
+  fi
+
+  zformat -f result "$format" "|:$(prompt:powerline:render-separator)"
+  print -n "$result"
+}
+
+function +powerline:date:setup {
+  prompt:powerline:colors-for date \
+    fx bold \
+    fg 238 \
+    bg 253
+}
+
+function +powerline:path {
+  if zdefault -t ':zoppo:prompt:powerline:plugin:path' full 'no'; then
+    print -n '%~'
+  else
+    print -n '%1~'
+  fi
+
+  if zdefault -t ':zoppo:prompt:powerline:plugin:path' vcs 'yes'; then
+    vcs_info
+
+    local -a enabled
+    zdefault -a ':zoppo:prompt:powerline:plugin:path:vcs' enable enabled "${VCS_INFO_backends[@]}"
+
+    local backend
+    for backend in ${VCS_INFO_backends[@]}; do
+      [ "${enabled[(I)$backend]}" = 0 ] && continue
+
+      zstyle ':vcs_info:*' enable "$backend"
+      vcs_info || continue
+      [ -n "$vcs_info_msg_0_" ] || continue
+
+      print -n " $POWERLINE_BRANCH "
+      print -n "$vcs_info_msg_0_"
+
+      break
+    done
+  fi
+
+  return 0
+}
+
+function +powerline:path:setup {
+  prompt:powerline:colors-for path \
+    fg 255 \
+    bg 33
+
+  function +vi-git-st {
+    if [[ -n $(git ls-files --other --exclude-standard 2> /dev/null) ]]; then
+      hook_com[unstaged]=' ✘'
+    fi
+  }
+
+  zdefault ':vcs_info:*' check-for-changes 'true'
+  zdefault ':vcs_info:*' unstagedstr ' ✘'
+  zdefault ':vcs_info:*' stagedstr ' ⚑'
+  zdefault ':vcs_info:*' actionformats '%b%u%c [%a]'
+  zdefault ':vcs_info:*' formats '%b%u%c'
+  zdefault ':vcs_info:*+set-message:*' hooks 'git-st'
+}
+
+function +powerline:return {
+  if (( LAST_RETURN == 0)); then
+    return 1
+  fi
+
+  print -n "$LAST_RETURN"
+}
+
+function +powerline:return:setup {
+  function +powerline:return:last-value {
+    integer -g LAST_RETURN=$?
+  }
+
+  hooks:add-first precmd +powerline:return:last-value
+
+  prompt:powerline:colors-for return \
+    fx bold \
+    fg 255 \
+    bg 88
+}
+
+function +powerline:pts {
+  print -n '/dev/%y'
+}
+
+function +powerline:pts:setup {
+  prompt:powerline:colors-for pts \
+    fg 250 \
+    bg 240
+}
+# }}}
+
+prompt_powerline_setup "$@"
+
+# vim: ft=zsh sts=2 ts=2 sw=2 et fdm=marker fmr={{{,}}}
