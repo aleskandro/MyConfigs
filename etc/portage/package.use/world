@@ -1,0 +1,13 @@
+app-emulation/docker container-init device-mapper seccomp -apparmor aufs btrfs hardened -overlay -pkcs11
+dev-qt/qtgui dbus egl gif gles2 jpeg png udev xcb evdev gtkstyle libinput 
+dev-qt/qtwayland egl qml xcomposite -debug -test -wayland-compositor
+kde-plasma/ksysguard handbook -debug lm_sensors
+media-video/ffmpeg X alsa bzip2 encode fontconfig gpl gsm hardcoded-tables iconv ladspa libcaca lzma mp3 network openal postproc samba sdl theora threads truetype v4l vaapi vorbis x264 xcb xvid zlib -altivec -amr -amrenc -armv5te -armv6 -armv6t2 -armvfp -bluray -bs2b -cdio -celt -chromaprint -cpudetection -debug -doc -ebur128 -fdk -flite -frei0r -fribidi -gcrypt -gme -gmp -gnutls -iec61883 -ieee1394 -jack -jpeg2k -kvazaar -libass -libilbc -librtmp -libsoxr -libv4l -mipsdspr1 -mipsdspr2 -mipsfpu -mmal -modplug -neon -nvenc -opengl -openh264 -openssl -opus -oss -pic -pulseaudio -rubberband -schroedinger -snappy -speex -ssh -static-libs -test -twolame -vdpau -vpx -wavpack -webp -x265 -zimg -zvbi
+media-video/vlc X a52 aalib alsa avcodec avformat cdda cddb dbus dts dvbpsi dvd encode ffmpeg flac fontconfig gcrypt jpeg kde libcaca libnotify libsamplerate matroska mp3 mpeg mtp ncurses ogg png qt4 qt5 rdp samba sdl svg swscale theora truetype udev v4l vaapi vnc vorbis x264 xcb xml xv zeroconf -altivec -atmo -audioqueue -bidi -bluray -chromaprint -dc1394 -debug -directfb -directx -dvb -dxva2 -faad -fdk -fluidsynth -gme -gnome -gnutls -growl -gstreamer -httpd -ieee1394 -jack -kate -libass -libav -libtar -libtiger -linsys -lirc -live -lua -macosx-dialog-provider -macosx-eyetv -macosx-qtkit -macosx-quartztext -modplug -musepack -neon -omxil -opencv -opengl -optimisememory -opus -postproc -projectm -pulseaudio -rtsp run-as-root -schroedinger -sdl-image sftp -shout -sid -skins -speex -taglib -test -tremor -twolame -upnp -vcdx -vdpau -vlm -vpx -wma-fixed -x265 -zvbi CPU_FLAGS_X86
+net-dialup/ppp atm gtk ipv6 pam dhcp eap-tls radius
+net-misc/iputils ipv6 ssl tftpd tracepath traceroute
+net-misc/modemmanager introspection policykit qmi -mbim -systemd -vala
+net-misc/networkmanager bluetooth connection-sharing consolekit dhclient introspection modemmanager ncurses nss ofono ppp wext wifi -audit -gnutls -json -resolvconf -selinux -systemd -teamd -test -vala
+net-misc/ofono atmodem bluetooth cdmamodem datafiles isimodem phonesim provision qmimodem threads udev -doc -dundee examples tools
+net-wireless/bluez cups obex readline udev -debug -deprecated -doc -experimental -extra-tools -selinux -systemd -test -test-programs -user-session
+x11-terms/xterm openpty truetype unicode xinerama -Xaw3d toolbar

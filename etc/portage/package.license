@@ -1,0 +1,3 @@
+# required by google-chrome-beta (argument)
+>=www-client/google-chrome-beta-59.0.3071.86 google-chrome
+=app-emulation/virtualbox-bin-5.0.32.112930 PUEL

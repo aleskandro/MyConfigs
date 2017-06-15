@@ -1,0 +1,4 @@
+# required by www-client/firefox-52.1.0-r1::gentoo
+# required by firefox (argument)
+>=dev-lang/python-2.7.12:2.7 sqlite
+

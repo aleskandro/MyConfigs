@@ -1,0 +1,1 @@
+app-editors/vim  cscope -debug lua luajit -minimal perl python racket ruby -tcl vim-pager

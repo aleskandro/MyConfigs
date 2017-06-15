@@ -1,0 +1,5 @@
+sys-firmware/iwl8000-ucode ~amd64
+# required by nvme-cli (argument)
+=sys-apps/nvme-cli-1.2 ~amd64
+# required by app-vim/rails (argument)
+=app-vim/rails-5.2 ~amd64

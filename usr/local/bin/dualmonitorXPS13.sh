@@ -4,7 +4,7 @@
 EDP1W=3200
 EDP1H=1800
 DP1W=$([ -n "$1" ] && echo $1 || echo 1920)
-DP1H=$([ -n "$2" ] && echo $2 || echo 1200)
+DP1H=$([ -n "$2" ] && echo $2 || echo 1080)
 SCALE=$([ -n "$3" ] && echo $3 || echo 1.6)
 FBX=$(awk "BEGIN {print ($DP1W*$SCALE)}")
 FBY=$(awk "BEGIN {print ($DP1H*$SCALE)}")
@@ -42,7 +42,7 @@ echo -e "0\t$C2\t$C3"
 echo -e "0\t0\t1"
 echo "-------------------"
 
-xrandr --output DP1 --scale ${SCALE}x${SCALE} --fb ${FBX}x${FBY} --pos 0x0 --mode 1920x1200
+xrandr --output DP1 --scale ${SCALE}x${SCALE} --fb ${FBX}x${FBY} --pos 0x0 --mode ${DP1W}x${DP1H}
 xrandr --output eDP1 --scale 1x1 --pos ${FBX}x0
 sleep 1
 killall -9 plasmashell &

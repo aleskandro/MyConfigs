@@ -222,7 +222,6 @@ if filereadable("/etc/vim/vimrc.local")
 endif
 "vsplit
 "vertical resize 30
-autocmd Vimenter * :NERDTree
 "let @t=':tabnew:vsplit:vertical resize 30:Ex'
 let @t=':tabnew:NERDTreeMirror'
 let @c=':tabclose'
@@ -242,3 +241,4 @@ nnoremap <F12> @q
 set exrc
 let g:indentLine_color_term = 239
 
+source ~/.mutt/address-search.vim

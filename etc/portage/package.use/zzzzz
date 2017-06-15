@@ -1,0 +1,67 @@
+x11-base/xorg-server dmx wayland xephyr xnest xvfb kdrive
+# required by sys-libs/ldb-1.1.29-r1::gentoo
+# required by net-fs/samba-4.5.10::gentoo
+# required by net-fs/cifs-utils-6.4::gentoo[acl]
+>=sys-libs/tevent-0.9.31-r1 python
+# required by media-video/vlc-2.2.4-r1::gentoo[samba]
+# required by media-libs/phonon-vlc-0.9.1-r1::gentoo
+# required by media-libs/phonon-4.9.1-r1::gentoo[vlc]
+# required by kde-frameworks/knotifyconfig-5.34.0::gentoo[phonon]
+# required by kde-apps/konsole-16.12.3::gentoo
+# required by konsole (argument)
+>=net-fs/samba-4.5.10 client
+# required by sys-libs/ldb-1.1.29-r1::gentoo
+# required by net-fs/samba-4.5.10::gentoo
+# required by net-fs/cifs-utils-6.4::gentoo[acl]
+>=sys-libs/tdb-1.3.13 python
+# required by kde-frameworks/kdnssd-5.34.0::gentoo[zeroconf]
+# required by kde-apps/kio-extras-16.12.3-r1::gentoo
+# required by kde-plasma/plasma-workspace-5.8.6-r1::gentoo
+# required by virtual/notification-daemon-0::gentoo[kde]
+# required by x11-libs/libnotify-0.7.7::gentoo
+# required by media-video/vlc-2.2.4-r1::gentoo[libnotify]
+# required by media-libs/phonon-vlc-0.9.1-r1::gentoo
+# required by media-libs/phonon-4.9.1-r1::gentoo[vlc]
+# required by kde-frameworks/khtml-5.34.0::gentoo
+# required by kde-apps/khelpcenter-16.12.3::gentoo
+# required by kde-frameworks/kdelibs-4.14.32::gentoo[handbook]
+# required by kde-plasma/breeze-5.8.6::gentoo[qt4]
+# required by kde-plasma/kwin-5.8.6::gentoo
+>=net-dns/avahi-0.6.32 mdnsresponder-compat
+# required by net-libs/nodejs-6.9.4::gentoo
+# required by nodejs (argument)
+>=dev-libs/openssl-1.0.2k -bindist
+# required by net-libs/webkit-gtk-2.16.3::gentoo
+# required by net-libs/libproxy-0.4.13-r2::gentoo[webkit]
+# required by net-libs/glib-networking-2.50.0::gentoo[libproxy]
+# required by net-libs/libsoup-2.56.0::gentoo
+# required by net-libs/webkit-gtk-2.4.11-r200::gentoo
+# required by x11-libs/wxGTK-3.0.2.0-r2::gentoo[webkit,X]
+# required by sci-visualization/gnuplot-5.0.1-r1::gentoo[wxwidgets]
+# required by sci-mathematics/octave-4.2.1::gentoo[gnuplot]
+# required by octave (argument)
+>=media-libs/harfbuzz-1.4.5 icu
+# required by kde-frameworks/kdelibs-4.14.32::gentoo
+# required by kde-apps/kget-16.12.3::gentoo[handbook]
+# required by kde-apps/kdenetwork-meta-16.12.3::gentoo
+# required by kde-apps/kde-apps-meta-16.12.3-r1::gentoo
+# required by kde-apps/kde-meta-16.12.3::gentoo
+# required by kde-meta (argument)
+>=dev-libs/libdbusmenu-qt-0.9.3_pre20160218 qt4
+# required by media-libs/mlt-6.4.1-r1::gentoo[sdl]
+# required by kde-apps/kdenlive-16.12.3::gentoo
+# required by kde-apps/kdemultimedia-meta-16.12.3::gentoo
+# required by kde-apps/kde-apps-meta-16.12.3-r1::gentoo
+# required by kde-apps/kde-meta-16.12.3::gentoo
+# required by kde-meta (argument)
+>=media-libs/libsdl-1.2.15-r9 opengl
+# required by media-libs/phonon-vlc-0.9.1-r1::gentoo
+>=media-libs/phonon-4.9.1-r1 qt4
+# required by media-libs/phonon-4.9.1-r1::gentoo[vlc]
+# required by dev-qt/designer-4.8.7::gentoo[phonon,kde]
+# required by kde-apps/konquest-16.12.3::gentoo
+# required by kde-apps/kdegames-meta-16.12.3::gentoo
+# required by kde-apps/kde-apps-meta-16.12.3-r1::gentoo
+# required by kde-apps/kde-meta-16.12.3::gentoo
+# required by kde-meta (argument)
+>=media-libs/phonon-vlc-0.9.1-r1 qt4

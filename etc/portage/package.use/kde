@@ -1,0 +1,6 @@
+kde-plasma/plasma-desktop gtk2 gtk3 legacy-systray
+dev-libs/libdbusmenu gtk3
+net-misc/networkmanager connection-sharing ofono
+sys-auth/polkit-qt qt4
+kde-apps/analitza opengl
+kde-apps/kde-apps-meta pim

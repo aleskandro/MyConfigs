@@ -1,0 +1,1 @@
+mail-client/neomutt berkdb crypt gdbm kerberos nls ssl -debug doc -gnutls gpg -idn -libressl mbox -notmuch -qdbm sasl -selinux -slang smime -tokyocabinet

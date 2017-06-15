@@ -1,0 +1,14 @@
+#!/bin/zsh
+#
+MESSAGE=$(cat)
+echo $MESSAGE
+echo "${MESSAGE}" | grep -E -o "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}\b" | while read MAIL 
+do
+echo $MAIL
+abook --mutt-query $MAIL >/dev/null 2>&1
+RET=$?
+[ $RET -eq 1 ] && echo "From: $MAIL" | abook --add-email-quiet 
+done
+
+echo $MESSAGE
+exit 0

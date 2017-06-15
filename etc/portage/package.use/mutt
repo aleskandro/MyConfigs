@@ -1,0 +1,1 @@
+mail-client/mutt berkdb crypt -gdbm imap kerberos nls nntp ssl -debug doc gpg mbox pop sidebar slang smime smtp -tokyocabinet
