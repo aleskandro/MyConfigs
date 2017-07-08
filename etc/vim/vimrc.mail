@@ -242,3 +242,8 @@ set exrc
 let g:indentLine_color_term = 239
 
 source ~/.mutt/address-search.vim
+set formatoptions+=w
+set tw=0
+"set fo=aw
+
+
