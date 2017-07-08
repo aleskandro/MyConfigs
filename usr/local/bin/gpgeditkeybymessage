@@ -1,0 +1,3 @@
+#!/bin/zsh
+KEY=$(pgpdump | grep "Key ID" | grep -o "0x.*")
+gpg --edit-key $KEY

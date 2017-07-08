@@ -136,3 +136,12 @@ set imap_check_subscribed
 # Trick for VIM mails and line breaks
 set text_flowed
 
+# PGP
+#
+set pgp_use_gpg_agent = yes
+set pgp_sign_as = F40316C5
+set pgp_timeout = 3600
+set crypt_autosign = yes
+set crypt_replyencrypt = yes
+macro index,pager "\Ct" "<pipe-message>gpgeditkeybymessage<enter>"
+source ~/.mutt/gpg.rc
