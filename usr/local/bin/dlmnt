@@ -1,0 +1,93 @@
+#!/bin/bash
+# Variables to set (TODO)
+# Find output names with: $ xrandr
+MAIN_OUTPUT="eDP-1"
+SECOND_OUTPUT="DP-1-1"
+
+# A basic script to get dual-monitor working and touchscreen on hidpi xps13 2016 with Xorg.
+# 
+echo "Set dual monitor on XPS13 (2016)"
+echo
+echo "Usage: $0 [Monitor2Width ( = 1920) [Monitor2Height (= 1080)"
+echo -e "\t\t[Left2Right, 1 if second monitor is on the right (= 0)  [Monitor2ScaleFactor (= 1.6)]]]]"
+echo
+echo "Example aliases for your .bashrc: "
+echo "alias second_monitor='dlmnt 3840 2160 1 1.1'"
+echo 'alias office_monitor="dlmnt 3440 1440 1 1.5"'
+echo
+echo
+
+# Main monitor resolution
+EDP1W=3200
+EDP1H=1800
+
+# Second display "physical" resolution
+DP1W=$([ -n "$1" ] && echo "$1" || echo 1920)
+DP1H=$([ -n "$2" ] && echo "$2" || echo 1080)
+
+# LR = 1 means second display has to be right of the first one
+LR=$([ -n "$3" ] && echo "$3" || echo 0)
+
+# Scale factor for the second display RESOLUTION
+# The bigger the scale scale factor the smaller the screen contents
+# Screen Content scale factor = 1/$SCALE,
+# e.g., SCALE = 2 means any window is two times smaller in the second display
+SCALE=$([ -n "$4" ] && echo "$4" || echo 1.6)
+
+# After scale "virtual" resolution
+FBW=$(awk "BEGIN {print int($DP1W*$SCALE)}")
+FBH=$(awk "BEGIN {print int($DP1H*$SCALE)}")
+
+TOUCHSCREEN_ID=$(xinput | grep "Touchscreen" | sed 's/.*id=\([0-9]*\).*/\1/')
+
+# Total "virtual" resolution
+TOTAL_WIDTH=$((($FBW+$EDP1W)))
+TOTAL_HEIGHT=$(awk -v max=$EDP1H "BEGIN {if ($FBH > max) { max=$FBH } print max }")
+
+# Touch area
+TOUCH_WIDTH=$EDP1W
+TOUCH_HEIGHT=$EDP1H
+
+# Touch origin coordinates
+TOUCH_OFFSET_X=$([ "$LR" = 1 ] && echo 0 || echo "$FBW")
+TOUCH_OFFSET_Y=0
+
+# See https://wiki.ubuntu.com/X/InputCoordinateTransformation
+# https://unix.stackexchange.com/questions/138168/matrix-structure-for-screen-rotation
+C0=$(awk "BEGIN {print ($TOUCH_WIDTH/$TOTAL_WIDTH)}")
+C1=$(awk "BEGIN {print ($TOUCH_OFFSET_X/$TOTAL_WIDTH)}")
+C2=$(awk "BEGIN {print ($TOUCH_HEIGHT/$TOTAL_HEIGHT)}")
+C3=$(awk "BEGIN {print ($TOUCH_OFFSET_Y/$TOTAL_HEIGHT)}")
+
+echo "First monitor (physical) resolution: $EDP1W x $EDP1H"
+echo "Second monitor (physical) resolution: $DP1W x $DP1W"
+echo "Second monitor resolution scale factor = $SCALE"
+echo "Second monitor (virtual) resolution: $FBW x $FBH"
+echo "Total screen area (physical): $((($DP1W + $EDP1W)))x$((($DP1H + $EDP1H)))"
+echo "Total screen area (virtual): $TOTAL_WIDTH x $TOTAL_HEIGHT"
+echo "Touch screen area: $TOUCH_WIDTH x $TOUCH_HEIGHT"
+echo "Touch screen offset (x, y): ($TOUCH_OFFSET_X, $TOUCH_OFFSET_Y)"
+
+echo
+echo "Touch screen settings"
+echo "Touch area: $EDP1W * $EDP1H + $TOUCH_OFFSET_X + 0"
+echo "Coordinate Transformation Matrix"
+echo "-------------------"
+echo -e "$C0\t0\t$C1"
+echo -e "0\t$C2\t$C3"
+echo -e "0\t0\t1"
+echo "-------------------"
+
+set -x
+# Set second monitor
+xrandr --output $SECOND_OUTPUT --scale "$SCALE"x"$SCALE" --fb "$FBW"x"$FBH"\
+       --pos "$([ "$LR" = "1" ] && echo $EDP1W || echo 0)"x0 --mode "$DP1W"x"$DP1H"
+
+# Set main monitor
+xrandr --output $MAIN_OUTPUT --scale 1x1 --pos "$([ "$LR" = 1 ] && echo 0 || echo "$FBW")"x0
+xinput set-prop "$TOUCHSCREEN_ID" --type=float "Coordinate Transformation Matrix" "$C0" 0 "$C1" 0 "$C2" "$C3" 0 0 1
+set +x
+
+# TODO you may need to reset your window manager, e.g.,
+# kquitapp5 plasmashell > /dev/null 2>&1
+# kstart5 plasmashell > /dev/null 2>&1
